@@ -1,0 +1,21 @@
+---
+- name: Converge
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+
+  vars:
+    namespace: molecule-test
+
+  pre_tasks:
+    - name: Create namespace
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ namespace }}"
+
+  roles:
+    - role: ansible-role-k8s-percona

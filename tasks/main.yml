@@ -1,0 +1,24 @@
+---
+- name: Include role vars
+  include_vars:
+    file: "{{ role_path }}/defaults/main.yml"
+    name: percona_envs
+
+- name: Create percona service
+  k8s:
+    namespace: "{{ namespace }}"
+    state: present
+    definition: "{{ lookup('template', 'templates/service_percona.yml.j2') | from_yaml }}"
+
+- name: Create percona pvc
+  k8s:
+    namespace: "{{ namespace }}"
+    state: present
+    definition: "{{ lookup('template', 'templates/pvc_percona.yml.j2') | from_yaml }}"
+
+- name: Create percona deployment
+  k8s:
+    namespace: "{{ namespace }}"
+    state: present
+    force: "{{ percona_force_replace }}"
+    definition: "{{ lookup('template', 'templates/deployment_percona.yml.j2') | from_yaml }}"

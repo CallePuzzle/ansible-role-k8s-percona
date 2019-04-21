@@ -1,0 +1,12 @@
+---
+namespace: default
+
+percona_registry_uri: percona
+percona_registry_tag: 5.7
+percona_force_replace: false
+percona_pvc_size: 1Gi
+
+env_mysql_root_password: mysql
+# env_mysql_database: null
+# env_mysql_user: null
+# env_mysql_password: null

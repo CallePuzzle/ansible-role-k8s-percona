@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: percona
+  labels:
+    app: percona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: percona
+  template:
+    metadata:
+      labels:
+        app: percona
+    spec:
+      containers:
+      - name: percona
+        image: {{ percona_registry_uri }}:{{ percona_registry_tag }}
+        env:
+        {% for percona_env in percona_envs | map('regex_search', '^env_.*') | list %}{% if percona_env %}- name: {{ percona_env | regex_replace('^env_(.*)$', '\\1') | upper }}
+          value: "{{ lookup('vars', percona_env) }}"
+        {% endif %}{% endfor %}resources: {}
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: percona-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+        - name: percona-persistent-storage
+          persistentVolumeClaim:
+            claimName: percona-pvc
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
