@@ -19,9 +19,11 @@ spec:
       - name: percona
         image: {{ percona_registry_uri }}:{{ percona_registry_tag }}
         env:
-        {% for percona_env in percona_envs | map('regex_search', '^env_.*') | list %}{% if percona_env %}- name: {{ percona_env | regex_replace('^env_(.*)$', '\\1') | upper }}
-          value: "{{ lookup('vars', percona_env) }}"
-        {% endif %}{% endfor %}resources: {}
+        {% for percona_env in percona_envs | map('regex_search', '^env_.*') | list %}{% if percona_env %}{% set percona_env_value = lookup('vars', percona_env) %}{% if percona_env_value  %} # if
+        - name: {{ percona_env | regex_replace('^env_(.*)$', '\\1') | upper }}
+          value: '{{ lookup('vars', percona_env) }}'
+        {% endif %}{% endif %}{% endfor %} # end
+        resources: {}
         ports:
         - containerPort: 3306
           name: mysql
